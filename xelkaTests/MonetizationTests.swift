@@ -13,16 +13,21 @@ import CoreGraphics
 
 struct MonetizationTests {
 
-    @Test func originalThreeStylesAreFree() {
-        for id in ["gameboy", "pico8", "modern"] {
-            let style = PixelArtStyle.presets.first { $0.id == id }!
-            #expect(style.isPremium == false)
+    @Test func freeStylesAreNotPremium() {
+        for id in PixelArtStyle.freeStyleIDs {
+            if let style = PixelArtStyle.presets.first(where: { $0.id == id }) {
+                #expect(style.isPremium == false)
+            }
         }
     }
 
-    @Test func addedStylesArePremium() {
-        let free: Set<String> = ["gameboy", "pico8", "modern"]
-        let premium = PixelArtStyle.presets.filter { !free.contains($0.id) }
+    @Test func gameBoyPocketIsFree() {
+        let gbp = PixelArtStyle.presets.first { $0.id == "gbpocket" }!
+        #expect(gbp.isPremium == false)
+    }
+
+    @Test func nonFreeStylesArePremium() {
+        let premium = PixelArtStyle.presets.filter { !PixelArtStyle.freeStyleIDs.contains($0.id) }
         #expect(premium.isEmpty == false)
         for style in premium {
             #expect(style.isPremium == true)
