@@ -101,4 +101,104 @@ extension Palette {
         ],
         isTonal: false
     )
+
+    // MARK: Monochrome / single-hue ramps (tonal — matched by brightness)
+
+    /// Neutral 4-shade grayscale — the Game Boy Pocket "no tint" look.
+    static let grayscale = Palette(
+        name: "Grayscale",
+        colors: [
+            RGBColor(hex: 0x0B0B0B),
+            RGBColor(hex: 0x555555),
+            RGBColor(hex: 0xA8A8A8),
+            RGBColor(hex: 0xEDEDED),
+        ],
+        isTonal: true
+    )
+
+    /// Pure 1-bit black & white — pairs with error-diffusion for an inky stipple.
+    static let oneBit = Palette(
+        name: "1-Bit",
+        colors: [RGBColor(hex: 0x111111), RGBColor(hex: 0xF5F5F5)],
+        isTonal: true
+    )
+
+    /// Green phosphor CRT terminal.
+    static let greenCRT = Palette(
+        name: "Green CRT",
+        colors: [
+            RGBColor(hex: 0x001800),
+            RGBColor(hex: 0x00450F),
+            RGBColor(hex: 0x1FBB3A),
+            RGBColor(hex: 0x5BFF74),
+        ],
+        isTonal: true
+    )
+
+    /// Amber phosphor CRT terminal.
+    static let amberCRT = Palette(
+        name: "Amber CRT",
+        colors: [
+            RGBColor(hex: 0x1A0E00),
+            RGBColor(hex: 0x5E3D00),
+            RGBColor(hex: 0xD98A00),
+            RGBColor(hex: 0xFFC94D),
+        ],
+        isTonal: true
+    )
+
+    /// Warm sepia ramp — old-photograph mood.
+    static let sepia = Palette(
+        name: "Sepia",
+        colors: [
+            RGBColor(hex: 0x241606),
+            RGBColor(hex: 0x5C3D1E),
+            RGBColor(hex: 0x9A6D3F),
+            RGBColor(hex: 0xC79A6B),
+            RGBColor(hex: 0xEFD9B0),
+        ],
+        isTonal: true
+    )
+
+    // MARK: Full-color palettes (chroma — matched by color distance)
+
+    /// Classic CGA high-intensity mode: black / cyan / magenta / white.
+    static let cga = Palette(
+        name: "CGA",
+        colors: [
+            RGBColor(hex: 0x000000),
+            RGBColor(hex: 0x55FFFF),
+            RGBColor(hex: 0xFF55FF),
+            RGBColor(hex: 0xFFFFFF),
+        ],
+        isTonal: false
+    )
+
+    /// The Commodore 64's 16-color home-computer palette.
+    static let commodore64 = Palette(
+        name: "Commodore 64",
+        colors: [
+            RGBColor(hex: 0x000000), RGBColor(hex: 0xFFFFFF), RGBColor(hex: 0x880000),
+            RGBColor(hex: 0xAAFFEE), RGBColor(hex: 0xCC44CC), RGBColor(hex: 0x00CC55),
+            RGBColor(hex: 0x0000AA), RGBColor(hex: 0xEEEE77), RGBColor(hex: 0xDD8855),
+            RGBColor(hex: 0x664400), RGBColor(hex: 0xFF7777), RGBColor(hex: 0x333333),
+            RGBColor(hex: 0x777777), RGBColor(hex: 0xAAFF66), RGBColor(hex: 0x0088FF),
+            RGBColor(hex: 0xBBBBBB),
+        ],
+        isTonal: false
+    )
+
+    /// "Sweetie 16" (GrafxKid) — a punchy, modern 16-color pixel-art palette.
+    static let sweetie16 = Palette(
+        name: "Sweetie 16",
+        colors: [
+            RGBColor(hex: 0x1A1C2C), RGBColor(hex: 0x5D275D), RGBColor(hex: 0xB13E53),
+            RGBColor(hex: 0xEF7D57), RGBColor(hex: 0xFFCD75), RGBColor(hex: 0xA7F070),
+            RGBColor(hex: 0x38B764), RGBColor(hex: 0x257179), RGBColor(hex: 0x29366F),
+            RGBColor(hex: 0x3B5DC9), RGBColor(hex: 0x41A6F6), RGBColor(hex: 0x73EFF7),
+            RGBColor(hex: 0xF4F4F4), RGBColor(hex: 0x94B0C2), RGBColor(hex: 0x566C86),
+            RGBColor(hex: 0x333C57),
+        ],
+        isTonal: false
+    )
 }

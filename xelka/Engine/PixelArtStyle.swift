@@ -113,6 +113,97 @@ extension PixelArtStyle {
         preprocess: Preprocess(contrast: 1.05, saturation: 1.05, brightness: 0)
     )
 
-    /// The full preset lineup, in picker order.
-    static let presets: [PixelArtStyle] = [.gameBoy, .pico8, .modernClean]
+    /// Neutral grayscale at handheld scale — the Game Boy Pocket look.
+    static let gameBoyPocket = PixelArtStyle(
+        id: "gbpocket",
+        name: "Game Boy Pocket",
+        subtitle: "4-shade grayscale",
+        resolution: 128,
+        quantization: .fixed(.grayscale),
+        dithering: .ordered,
+        preprocess: Preprocess(contrast: 1.12, saturation: 0, brightness: 0.02)
+    )
+
+    /// Stark 1-bit black & white with error-diffusion — an inky, comic stipple.
+    static let oneBit = PixelArtStyle(
+        id: "onebit",
+        name: "1-Bit Ink",
+        subtitle: "black & white, dithered",
+        resolution: 160,
+        quantization: .fixed(.oneBit),
+        dithering: .floydSteinberg,
+        preprocess: Preprocess(contrast: 1.2, saturation: 0, brightness: 0)
+    )
+
+    /// Green phosphor CRT terminal glow.
+    static let greenCRT = PixelArtStyle(
+        id: "greencrt",
+        name: "Green CRT",
+        subtitle: "phosphor terminal",
+        resolution: 128,
+        quantization: .fixed(.greenCRT),
+        dithering: .ordered,
+        preprocess: Preprocess(contrast: 1.15, saturation: 0, brightness: 0.02)
+    )
+
+    /// Amber phosphor CRT terminal glow.
+    static let amberCRT = PixelArtStyle(
+        id: "ambercrt",
+        name: "Amber CRT",
+        subtitle: "phosphor terminal",
+        resolution: 128,
+        quantization: .fixed(.amberCRT),
+        dithering: .ordered,
+        preprocess: Preprocess(contrast: 1.15, saturation: 0, brightness: 0.02)
+    )
+
+    /// Warm sepia duotone — an old-photograph mood.
+    static let sepia = PixelArtStyle(
+        id: "sepia",
+        name: "Sepia",
+        subtitle: "old photograph",
+        resolution: 160,
+        quantization: .fixed(.sepia),
+        dithering: .floydSteinberg,
+        preprocess: Preprocess(contrast: 1.06, saturation: 0, brightness: 0.02)
+    )
+
+    /// Iconic 4-color CGA cyan/magenta DOS look.
+    static let cga = PixelArtStyle(
+        id: "cga",
+        name: "CGA",
+        subtitle: "4-color DOS",
+        resolution: 128,
+        quantization: .fixed(.cga),
+        dithering: .ordered,
+        preprocess: Preprocess(contrast: 1.10, saturation: 1.25, brightness: 0)
+    )
+
+    /// Commodore 64 16-color home-computer palette.
+    static let commodore64 = PixelArtStyle(
+        id: "c64",
+        name: "Commodore 64",
+        subtitle: "16-color home computer",
+        resolution: 128,
+        quantization: .fixed(.commodore64),
+        dithering: .ordered,
+        preprocess: Preprocess(contrast: 1.08, saturation: 1.15, brightness: 0)
+    )
+
+    /// Punchy modern 16-color pixel art, no dither for crisp flat blocks.
+    static let sweetie16 = PixelArtStyle(
+        id: "sweetie16",
+        name: "Sweetie 16",
+        subtitle: "modern 16-color",
+        resolution: 144,
+        quantization: .fixed(.sweetie16),
+        dithering: .none,
+        preprocess: Preprocess(contrast: 1.05, saturation: 1.15, brightness: 0)
+    )
+
+    /// The full preset lineup, in picker order (crowd-pleasers first).
+    static let presets: [PixelArtStyle] = [
+        .gameBoy, .gameBoyPocket, .pico8, .sweetie16, .modernClean,
+        .oneBit, .commodore64, .cga, .greenCRT, .amberCRT, .sepia,
+    ]
 }
