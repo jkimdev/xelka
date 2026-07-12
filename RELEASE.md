@@ -38,14 +38,15 @@ Status as of the monetization + release-prep work on `feat/p0-camera-features`.
    support URL, **privacy policy URL** (required because the app has IAP),
    age-rating questionnaire.
 
-## ⚠️ Decision: deployment target
+## Deployment target — lowered to iOS 18.0 ✅
 
-`IPHONEOS_DEPLOYMENT_TARGET = 26.2` — this excludes every device not on the
-very latest iOS, which is a large chunk of the potential SNS audience. The code
-floor is **iOS 17** (`@Observable`, SwiftData). Lowering to iOS 17/18 would
-greatly widen the market but needs an availability audit (StoreKit 2, the CI
-metal kernel, PhotosPicker) + testing on an older OS. Recommend lowering before
-launch.
+Was `26.2` (excluded almost the whole audience). Now **`IPHONEOS_DEPLOYMENT_TARGET
+= 18.0`** on all targets. Availability audit passed: a clean build against the
+iOS 26 SDK with the 18.0 target produced **no availability errors**, so every
+API in use (StoreKit 2, SwiftData/@Observable, PhotosPicker, the Metal CIKernel)
+is iOS 18-safe. No iOS 18 simulator is installed locally — do a real-device (or
+downloaded iOS 18 sim) smoke test of camera + live preview + purchase before
+launch to confirm runtime behavior.
 
 ## Notes / limitations
 
