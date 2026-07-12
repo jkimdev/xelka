@@ -411,6 +411,7 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_NSCameraUsageDescription = "xelka uses the camera as a live pixel-art viewfinder.";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "xelka saves your pixel-art photos to your library.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "xelka imports photos to turn them into pixel art.";
@@ -460,6 +461,7 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_NSCameraUsageDescription = "xelka uses the camera as a live pixel-art viewfinder.";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "xelka saves your pixel-art photos to your library.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "xelka imports photos to turn them into pixel art.";
