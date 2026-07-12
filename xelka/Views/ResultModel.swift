@@ -29,7 +29,9 @@ final class ResultModel {
         self.source = source
         self.style = style
         self.dithering = style.dithering
-        self.resolution = style.resolution
+        // effectiveResolution honors a pixel-size chosen before capture (the
+        // camera passes its live style with resolutionOverride set).
+        self.resolution = style.effectiveResolution
         self.preprocess = style.preprocess
         reprocess()
     }

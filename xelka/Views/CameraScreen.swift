@@ -28,11 +28,20 @@ enum CaptureMode { case photo, video }
 struct CameraScreen: View {
     @Environment(ProStore.self) private var store
     @State private var selectedStyle: PixelArtStyle = .gameBoy
+    @State private var pixelSize: Int = PixelArtStyle.gameBoy.resolution
     @State private var pending: SourceImage?
     @State private var pickerItem: PhotosPickerItem?
     @State private var isCapturing = false
     @State private var captureMode: CaptureMode = .photo
     @State private var showPaywall = false
+
+    /// The selected style with the chosen pixel size folded in — what the live
+    /// preview renders and what the result screen starts from.
+    private var liveStyle: PixelArtStyle {
+        var s = selectedStyle
+        s.resolutionOverride = pixelSize
+        return s
+    }
 
     #if os(iOS)
     @State private var camera = CameraController()
@@ -73,9 +82,15 @@ struct CameraScreen: View {
             if case .running = camera.status {
                 camera.attachVideoDelegate(renderer)
             }
-            renderer.style = selectedStyle
+            renderer.style = liveStyle
         }
-        .onChange(of: selectedStyle.id) { _, _ in renderer.style = selectedStyle }
+        .onChange(of: selectedStyle.id) { _, _ in
+            // A new style resets pixel size to its authored default, then the
+            // live feed restyles to match.
+            pixelSize = selectedStyle.resolution
+            renderer.style = liveStyle
+        }
+        .onChange(of: pixelSize) { _, _ in renderer.style = liveStyle }
         .onReceive(Timer.publish(every: 1, on: .main, in: .common).autoconnect()) { _ in
             if isRecording { recordSeconds += 1 }
         }
@@ -89,7 +104,7 @@ struct CameraScreen: View {
         .onChange(of: pickerItem) { _, item in loadPicked(item) }
         .fullScreenCover(item: $pending) { src in
             NavigationStack {
-                ResultScreen(source: src.cgImage, initialStyle: selectedStyle)
+                ResultScreen(source: src.cgImage, initialStyle: liveStyle)
             }
         }
     }
@@ -140,10 +155,36 @@ struct CameraScreen: View {
             #if os(iOS)
             modePicker
             #endif
+            pixelSizeBar
             styleBar
             shutterRow
                 .padding(.bottom, 8)
         }
+    }
+
+    /// Chunky ← → fine pixel size, live on the preview and carried into capture.
+    private var pixelSizeBar: some View {
+        HStack(spacing: 12) {
+            Image(systemName: "square.grid.2x2")
+            Slider(value: pixelSizeBinding, in: 48...256, step: 8)
+                .tint(.white)
+            Image(systemName: "square.grid.4x3.fill")
+        }
+        .font(.caption)
+        .foregroundStyle(.white.opacity(0.9))
+        .padding(.horizontal, 20)
+        .padding(.vertical, 9)
+        .background(.ultraThinMaterial, in: Capsule())
+        .padding(.horizontal, 44)
+        .padding(.bottom, 6)
+        #if os(iOS)
+        .disabled(isRecording)
+        .opacity(isRecording ? 0.4 : 1)
+        #endif
+    }
+
+    private var pixelSizeBinding: Binding<Double> {
+        Binding(get: { Double(pixelSize) }, set: { pixelSize = Int($0) })
     }
 
     private var styleBar: some View {

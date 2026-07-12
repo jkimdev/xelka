@@ -46,6 +46,15 @@ struct ResultModelTests {
         #expect(m.hasCustomAdjustments == false)
     }
 
+    @Test func seedsResolutionFromPreCaptureOverride() {
+        // The camera passes its live style with a chosen pixel size folded in;
+        // the result model must start there, not at the style's authored default.
+        var s = PixelArtStyle.gameBoy
+        s.resolutionOverride = 96
+        let m = ResultModel(source: EngineTests.solid((10, 10, 10), w: 64, h: 64), style: s)
+        #expect(m.resolution == 96)
+    }
+
     @Test func brightnessOverrideIsIndependent() {
         let m = model(.modernClean)
         m.setBrightness(0.25)
