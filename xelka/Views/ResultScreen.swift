@@ -17,11 +17,14 @@ struct ResultScreen: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
     @Environment(ProStore.self) private var store
+    @Query(sort: \CustomPreset.createdAt, order: .reverse) private var presets: [CustomPreset]
 
     @State private var model: ResultModel
     @State private var didSave = false
     @State private var showPaywall = false
     @State private var showAdjust = false
+    @State private var showingSavePreset = false
+    @State private var presetName = ""
 
     #if canImport(UIKit)
     @State private var shareImage: ShareImage?
@@ -40,6 +43,13 @@ struct ResultScreen: View {
     var body: some View {
         content
             .sheet(isPresented: $showPaywall) { PaywallView() }
+            .alert("Save preset", isPresented: $showingSavePreset) {
+                TextField("Preset name", text: $presetName)
+                Button("Save", action: savePreset)
+                Button("Cancel", role: .cancel) {}
+            } message: {
+                Text("Saves the current style, dithering, pixel size and adjustments.")
+            }
         #if canImport(UIKit)
             .sheet(item: $shareImage) { ShareSheet(items: [$0.image]) }
         #endif
@@ -102,6 +112,18 @@ struct ResultScreen: View {
         VStack(spacing: 16) {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 10) {
+                    ForEach(presets) { preset in
+                        let s = preset.asStyle
+                        let locked = s.isPremium && !store.isPro
+                        StyleChip(style: s, isSelected: s.id == model.style.id, locked: locked, isCustom: true) {
+                            if locked { showPaywall = true } else { didSave = false; model.select(s) }
+                        }
+                        .contextMenu {
+                            Button(role: .destructive) {
+                                modelContext.delete(preset)
+                            } label: { Label("Delete preset", systemImage: "trash") }
+                        }
+                    }
                     ForEach(PixelArtStyle.presets) { style in
                         let locked = style.isPremium && !store.isPro
                         StyleChip(style: style, isSelected: style.id == model.style.id, locked: locked) {
@@ -128,6 +150,15 @@ struct ResultScreen: View {
             pixelSizeSlider
 
             adjustments
+
+            Button {
+                presetName = model.style.baseID == nil ? model.style.name : ""
+                showingSavePreset = true
+            } label: {
+                Label("Save as preset", systemImage: "bookmark")
+                    .font(.caption.weight(.semibold))
+            }
+            .tint(.white)
 
             if !store.isPro {
                 Button { showPaywall = true } label: {
@@ -244,6 +275,18 @@ struct ResultScreen: View {
             shareImage = ShareImage(image: UIImage(cgImage: baked))
             #endif
         }
+    }
+
+    /// Persist the current editing state as a reusable custom preset.
+    private func savePreset() {
+        let name = presetName.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !name.isEmpty else { return }
+        let preset = CustomPreset.capture(name: name, style: model.style,
+                                          dithering: model.dithering,
+                                          resolution: model.resolution,
+                                          preprocess: model.preprocess)
+        modelContext.insert(preset)
+        presetName = ""
     }
 
     /// Bake the export image, stamping the watermark in for free users.

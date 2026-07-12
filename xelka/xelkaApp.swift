@@ -15,6 +15,7 @@ struct xelkaApp: App {
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
             PixelShot.self,
+            CustomPreset.self,
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 

@@ -13,6 +13,8 @@ struct StyleChip: View {
     let isSelected: Bool
     /// Show a lock badge for a Pro style the user hasn't unlocked yet.
     var locked: Bool = false
+    /// Mark a user-saved preset with a small star.
+    var isCustom: Bool = false
     let action: () -> Void
 
     var body: some View {
@@ -54,6 +56,16 @@ struct StyleChip: View {
                         .font(.system(size: 11, weight: .bold))
                         .foregroundStyle(.white)
                 }
+            }
+        }
+        .overlay(alignment: .topLeading) {
+            if isCustom {
+                Image(systemName: "star.fill")
+                    .font(.system(size: 8, weight: .bold))
+                    .foregroundStyle(.yellow)
+                    .padding(2)
+                    .background(.black.opacity(0.5), in: Circle())
+                    .offset(x: -3, y: -3)
             }
         }
     }

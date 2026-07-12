@@ -55,12 +55,17 @@ struct PixelArtStyle: Identifiable, Sendable {
 
     /// The three original styles are free; everything added later is part of the
     /// paid Pro unlock. The engine ignores this — it only gates the picker UI.
+    /// A custom preset inherits the premium status of the palette it's built on.
     static let freeStyleIDs: Set<String> = ["gameboy", "pico8", "modern"]
-    var isPremium: Bool { !PixelArtStyle.freeStyleIDs.contains(id) }
+    var isPremium: Bool { !PixelArtStyle.freeStyleIDs.contains(baseID ?? id) }
 
     /// User override for `resolution`, set by the pixel-size slider. When nil the
     /// style's authored `resolution` is used.
     var resolutionOverride: Int? = nil
+
+    /// For a custom preset, the built-in style it derives its palette from.
+    /// nil for the built-in presets themselves.
+    var baseID: String? = nil
 
     /// The long-edge pixel count the engine and live filter actually run at.
     var effectiveResolution: Int { resolutionOverride ?? resolution }

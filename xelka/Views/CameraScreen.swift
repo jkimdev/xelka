@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import SwiftData
 import PhotosUI
 import Combine
 
@@ -27,6 +28,8 @@ enum CaptureMode { case photo, video }
 
 struct CameraScreen: View {
     @Environment(ProStore.self) private var store
+    @Environment(\.modelContext) private var modelContext
+    @Query(sort: \CustomPreset.createdAt, order: .reverse) private var presets: [CustomPreset]
     @State private var selectedStyle: PixelArtStyle = .gameBoy
     @State private var pixelSize: Int = PixelArtStyle.gameBoy.resolution
     @State private var pending: SourceImage?
@@ -190,6 +193,18 @@ struct CameraScreen: View {
     private var styleBar: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 10) {
+                ForEach(presets) { preset in
+                    let s = preset.asStyle
+                    let locked = s.isPremium && !store.isPro
+                    StyleChip(style: s, isSelected: s.id == selectedStyle.id, locked: locked, isCustom: true) {
+                        if locked { showPaywall = true } else { selectedStyle = s }
+                    }
+                    .contextMenu {
+                        Button(role: .destructive) {
+                            modelContext.delete(preset)
+                        } label: { Label("Delete preset", systemImage: "trash") }
+                    }
+                }
                 ForEach(PixelArtStyle.presets) { style in
                     let locked = style.isPremium && !store.isPro
                     StyleChip(style: style, isSelected: style.id == selectedStyle.id, locked: locked) {
