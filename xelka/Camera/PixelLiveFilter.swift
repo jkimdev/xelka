@@ -59,6 +59,11 @@ nonisolated final class PixelLiveFilter: @unchecked Sendable {
         pix.center = .zero
         var blocks = (pix.outputImage ?? input).cropped(to: ext)
 
+        // 1b. Tone shaping (contrast/saturation/brightness) on the blocked image,
+        //     matching the still engine's Preprocess order (after downsample,
+        //     before dither) so the preview reflects the style's/preset's look.
+        blocks = preprocessed(blocks, style.preprocess, extent: ext)
+
         // 2. Ordered dithering per art-block, before the palette snap — this is
         //    what makes the live feed match the dithered capture result.
         if style.dithering == .ordered {
@@ -75,6 +80,20 @@ nonisolated final class PixelLiveFilter: @unchecked Sendable {
         guard let cube = cube(for: style, source: blocks) else { return blocks }
         cube.inputImage = blocks
         return (cube.outputImage ?? blocks).cropped(to: ext)
+    }
+
+    /// Apply contrast/saturation/brightness via CIColorControls, whose formula
+    /// (contrast around 0.5, additive brightness, saturation toward luma) mirrors
+    /// the CPU engine's `applyPreprocess`. No-op at neutral so the common path
+    /// stays cheap.
+    private func preprocessed(_ image: CIImage, _ p: Preprocess, extent: CGRect) -> CIImage {
+        guard p.contrast != 1 || p.saturation != 1 || p.brightness != 0 else { return image }
+        let cc = CIFilter.colorControls()
+        cc.inputImage = image
+        cc.contrast = p.contrast
+        cc.saturation = p.saturation
+        cc.brightness = p.brightness
+        return (cc.outputImage ?? image).cropped(to: extent)
     }
 
     /// Dither strength per palette — tonal ramps have wide gaps between few

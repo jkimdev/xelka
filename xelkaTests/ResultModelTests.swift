@@ -46,6 +46,17 @@ struct ResultModelTests {
         #expect(m.hasCustomAdjustments == false)
     }
 
+    @Test func seedsPreprocessFromPreCaptureStyle() {
+        // The camera folds its tone tweaks into the style it hands off; the
+        // result model must start from them, not the style's authored defaults.
+        var s = PixelArtStyle.gameBoy
+        s.preprocess = Preprocess(contrast: 1.4, saturation: 0.3, brightness: 0.2)
+        let m = ResultModel(source: EngineTests.solid((10, 10, 10), w: 64, h: 64), style: s)
+        #expect(m.preprocess.contrast == 1.4)
+        #expect(m.preprocess.saturation == 0.3)
+        #expect(m.preprocess.brightness == 0.2)
+    }
+
     @Test func seedsResolutionFromPreCaptureOverride() {
         // The camera passes its live style with a chosen pixel size folded in;
         // the result model must start there, not at the style's authored default.

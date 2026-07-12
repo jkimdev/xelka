@@ -35,7 +35,7 @@ enum Dithering: String, Sendable, CaseIterable, Identifiable {
 }
 
 /// Light tone shaping applied before quantization. Multipliers around 1.0.
-struct Preprocess: Sendable {
+struct Preprocess: Sendable, Equatable {
     var contrast: Float = 1.0   // >1 pushes darks down / lights up around mid-grey
     var saturation: Float = 1.0 // >1 makes colors pop; 0 = greyscale
     var brightness: Float = 0.0 // additive, in -1...1

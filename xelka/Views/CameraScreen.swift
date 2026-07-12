@@ -32,17 +32,20 @@ struct CameraScreen: View {
     @Query(sort: \CustomPreset.createdAt, order: .reverse) private var presets: [CustomPreset]
     @State private var selectedStyle: PixelArtStyle = .gameBoy
     @State private var pixelSize: Int = PixelArtStyle.gameBoy.resolution
+    @State private var adjust: Preprocess = PixelArtStyle.gameBoy.preprocess
+    @State private var showAdjust = false
     @State private var pending: SourceImage?
     @State private var pickerItem: PhotosPickerItem?
     @State private var isCapturing = false
     @State private var captureMode: CaptureMode = .photo
     @State private var showPaywall = false
 
-    /// The selected style with the chosen pixel size folded in — what the live
-    /// preview renders and what the result screen starts from.
+    /// The selected style with the chosen pixel size and tone tweaks folded in —
+    /// what the live preview renders and what the result screen starts from.
     private var liveStyle: PixelArtStyle {
         var s = selectedStyle
         s.resolutionOverride = pixelSize
+        s.preprocess = adjust
         return s
     }
 
@@ -88,12 +91,14 @@ struct CameraScreen: View {
             renderer.style = liveStyle
         }
         .onChange(of: selectedStyle.id) { _, _ in
-            // A new style resets pixel size to its authored default, then the
-            // live feed restyles to match.
+            // A new style resets pixel size and tone to its authored defaults,
+            // then the live feed restyles to match.
             pixelSize = selectedStyle.resolution
+            adjust = selectedStyle.preprocess
             renderer.style = liveStyle
         }
         .onChange(of: pixelSize) { _, _ in renderer.style = liveStyle }
+        .onChange(of: adjust) { _, _ in renderer.style = liveStyle }
         .onReceive(Timer.publish(every: 1, on: .main, in: .common).autoconnect()) { _ in
             if isRecording { recordSeconds += 1 }
         }
@@ -158,11 +163,79 @@ struct CameraScreen: View {
             #if os(iOS)
             modePicker
             #endif
+            adjustBar
             pixelSizeBar
             styleBar
             shutterRow
                 .padding(.bottom, 8)
         }
+    }
+
+    /// Collapsible contrast/saturation/brightness controls — live on the preview
+    /// and carried into capture. Collapsed by default so the camera stays clean.
+    private var adjustBar: some View {
+        VStack(spacing: 8) {
+            Button {
+                withAnimation(.easeInOut(duration: 0.2)) { showAdjust.toggle() }
+            } label: {
+                HStack(spacing: 6) {
+                    Image(systemName: "slider.horizontal.3")
+                    Text("Adjust")
+                    if adjust != selectedStyle.preprocess {
+                        Circle().fill(.yellow).frame(width: 5, height: 5)
+                    }
+                    Image(systemName: showAdjust ? "chevron.up" : "chevron.down")
+                        .font(.caption2)
+                }
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.white.opacity(0.9))
+                .padding(.horizontal, 14)
+                .padding(.vertical, 7)
+                .background(.ultraThinMaterial, in: Capsule())
+            }
+            .buttonStyle(.plain)
+
+            if showAdjust {
+                VStack(spacing: 8) {
+                    camSlider("circle.righthalf.filled", value: contrastBinding, in: 0.5...2.0)
+                    camSlider("drop.halffull", value: saturationBinding, in: 0...2.0)
+                    camSlider("sun.max", value: brightnessBinding, in: -0.5...0.5)
+                    if adjust != selectedStyle.preprocess {
+                        Button("Reset") { adjust = selectedStyle.preprocess }
+                            .font(.caption2.weight(.semibold))
+                            .tint(.white)
+                    }
+                }
+                .padding(.horizontal, 20)
+                .padding(.vertical, 10)
+                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+                .padding(.horizontal, 36)
+            }
+        }
+        .padding(.bottom, 4)
+        #if os(iOS)
+        .disabled(isRecording)
+        .opacity(isRecording ? 0.4 : 1)
+        #endif
+    }
+
+    private func camSlider(_ icon: String, value: Binding<Double>, in range: ClosedRange<Double>) -> some View {
+        HStack(spacing: 12) {
+            Image(systemName: icon).frame(width: 18)
+            Slider(value: value, in: range).tint(.white)
+        }
+        .font(.caption)
+        .foregroundStyle(.white.opacity(0.85))
+    }
+
+    private var contrastBinding: Binding<Double> {
+        Binding(get: { Double(adjust.contrast) }, set: { adjust.contrast = Float($0) })
+    }
+    private var saturationBinding: Binding<Double> {
+        Binding(get: { Double(adjust.saturation) }, set: { adjust.saturation = Float($0) })
+    }
+    private var brightnessBinding: Binding<Double> {
+        Binding(get: { Double(adjust.brightness) }, set: { adjust.brightness = Float($0) })
     }
 
     /// Chunky ← → fine pixel size, live on the preview and carried into capture.
