@@ -17,5 +17,6 @@ struct ContentView: View {
 
 #Preview {
     ContentView()
+        .environment(ProStore())
         .modelContainer(for: PixelShot.self, inMemory: true)
 }

@@ -16,9 +16,11 @@ import UIKit
 struct ResultScreen: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
+    @Environment(ProStore.self) private var store
 
     @State private var model: ResultModel
     @State private var didSave = false
+    @State private var showPaywall = false
 
     #if canImport(UIKit)
     @State private var shareImage: ShareImage?
@@ -36,6 +38,7 @@ struct ResultScreen: View {
 
     var body: some View {
         content
+            .sheet(isPresented: $showPaywall) { PaywallView() }
         #if canImport(UIKit)
             .sheet(item: $shareImage) { ShareSheet(items: [$0.image]) }
         #endif
@@ -99,9 +102,14 @@ struct ResultScreen: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 10) {
                     ForEach(PixelArtStyle.presets) { style in
-                        StyleChip(style: style, isSelected: style.id == model.style.id) {
-                            didSave = false
-                            model.select(style)
+                        let locked = style.isPremium && !store.isPro
+                        StyleChip(style: style, isSelected: style.id == model.style.id, locked: locked) {
+                            if locked {
+                                showPaywall = true
+                            } else {
+                                didSave = false
+                                model.select(style)
+                            }
                         }
                     }
                 }
@@ -117,6 +125,14 @@ struct ResultScreen: View {
             .padding(.horizontal, 16)
 
             pixelSizeSlider
+
+            if !store.isPro {
+                Button { showPaywall = true } label: {
+                    Label("Remove watermark with Pro", systemImage: "crown.fill")
+                        .font(.caption.weight(.semibold))
+                }
+                .tint(.yellow)
+            }
         }
         .padding(.vertical, 16)
         .background(.thinMaterial)
@@ -148,7 +164,7 @@ struct ResultScreen: View {
 
     private func save() {
         Task {
-            guard let baked = await model.bakedForExport(),
+            guard let baked = await exportImage(),
                   let png = ImageIO.png(from: baked) else { return }
             let shot = PixelShot(styleID: model.style.id, styleName: model.style.name, pngData: png)
             modelContext.insert(shot)
@@ -159,10 +175,20 @@ struct ResultScreen: View {
 
     private func share() {
         Task {
-            guard let baked = await model.bakedForExport() else { return }
+            guard let baked = await exportImage() else { return }
             #if canImport(UIKit)
             shareImage = ShareImage(image: UIImage(cgImage: baked))
             #endif
         }
+    }
+
+    /// Bake the export image, stamping the watermark in for free users.
+    private func exportImage() async -> CGImage? {
+        guard let baked = await model.bakedForExport() else { return nil }
+        #if canImport(UIKit)
+        return store.isPro ? baked : Watermark.stamp(baked)
+        #else
+        return baked
+        #endif
     }
 }

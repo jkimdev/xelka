@@ -10,6 +10,8 @@ import SwiftData
 
 @main
 struct xelkaApp: App {
+    @State private var proStore = ProStore()
+
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
             PixelShot.self,
@@ -26,6 +28,7 @@ struct xelkaApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environment(proStore)
         }
         .modelContainer(sharedModelContainer)
     }

@@ -26,11 +26,13 @@ struct VideoResult: Identifiable {
 enum CaptureMode { case photo, video }
 
 struct CameraScreen: View {
+    @Environment(ProStore.self) private var store
     @State private var selectedStyle: PixelArtStyle = .gameBoy
     @State private var pending: SourceImage?
     @State private var pickerItem: PhotosPickerItem?
     @State private var isCapturing = false
     @State private var captureMode: CaptureMode = .photo
+    @State private var showPaywall = false
 
     #if os(iOS)
     @State private var camera = CameraController()
@@ -48,12 +50,23 @@ struct CameraScreen: View {
         .navigationTitle("xelka")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
+            if !store.isPro {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button { showPaywall = true } label: {
+                        Label("Pro", systemImage: "crown.fill")
+                            .labelStyle(.titleAndIcon)
+                            .font(.subheadline.weight(.semibold))
+                    }
+                    .tint(.yellow)
+                }
+            }
             ToolbarItem(placement: .topBarTrailing) {
                 NavigationLink { GalleryView() } label: {
                     Image(systemName: "photo.on.rectangle.angled")
                 }
             }
         }
+        .sheet(isPresented: $showPaywall) { PaywallView() }
         #if os(iOS)
         .task {
             await camera.start()
@@ -137,8 +150,9 @@ struct CameraScreen: View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 10) {
                 ForEach(PixelArtStyle.presets) { style in
-                    StyleChip(style: style, isSelected: style.id == selectedStyle.id) {
-                        selectedStyle = style
+                    let locked = style.isPremium && !store.isPro
+                    StyleChip(style: style, isSelected: style.id == selectedStyle.id, locked: locked) {
+                        if locked { showPaywall = true } else { selectedStyle = style }
                     }
                 }
             }
@@ -232,14 +246,29 @@ struct CameraScreen: View {
 
     #if os(iOS)
     private var modePicker: some View {
-        Picker("Mode", selection: $captureMode) {
+        Picker("Mode", selection: modeBinding) {
             Text("Photo").tag(CaptureMode.photo)
-            Text("Video").tag(CaptureMode.video)
+            Label("Video", systemImage: store.isPro ? "video" : "lock.fill")
+                .tag(CaptureMode.video)
         }
         .pickerStyle(.segmented)
         .frame(width: 200)
         .padding(.bottom, 8)
         .disabled(isRecording)
+    }
+
+    /// Selecting Video as a free user opens the paywall instead of switching.
+    private var modeBinding: Binding<CaptureMode> {
+        Binding(
+            get: { captureMode },
+            set: { newMode in
+                if newMode == .video && !store.isPro {
+                    showPaywall = true
+                } else {
+                    captureMode = newMode
+                }
+            }
+        )
     }
 
     private var recordingPill: some View {

@@ -1,0 +1,33 @@
+{
+  "identifier" : "6A8F2C10-1111-2222-3333-444455556666",
+  "nonRenewingSubscriptions" : [
+
+  ],
+  "products" : [
+    {
+      "displayPrice" : "4.99",
+      "familyShareable" : false,
+      "internalID" : "1",
+      "localizations" : [
+        {
+          "description" : "Remove the watermark, unlock every style, and record video & GIF.",
+          "displayName" : "xelka Pro",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "com.jimmythegenius.xelka.pro",
+      "referenceName" : "xelka Pro",
+      "type" : "NonConsumable"
+    }
+  ],
+  "settings" : {
+
+  },
+  "subscriptionGroups" : [
+
+  ],
+  "version" : {
+    "major" : 3,
+    "minor" : 0
+  }
+}

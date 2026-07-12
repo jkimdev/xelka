@@ -11,6 +11,8 @@ import SwiftUI
 struct StyleChip: View {
     let style: PixelArtStyle
     let isSelected: Bool
+    /// Show a lock badge for a Pro style the user hasn't unlocked yet.
+    var locked: Bool = false
     let action: () -> Void
 
     var body: some View {
@@ -43,6 +45,17 @@ struct StyleChip: View {
         }
         .frame(width: 56, height: 20)
         .clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous))
+        .overlay {
+            if locked {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 4, style: .continuous)
+                        .fill(.black.opacity(0.45))
+                    Image(systemName: "lock.fill")
+                        .font(.system(size: 11, weight: .bold))
+                        .foregroundStyle(.white)
+                }
+            }
+        }
     }
 
     /// Show up to 6 evenly-spaced swatches so 16-color strips stay legible.

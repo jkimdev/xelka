@@ -53,6 +53,11 @@ struct PixelArtStyle: Identifiable, Sendable {
     var dithering: Dithering
     var preprocess: Preprocess
 
+    /// The three original styles are free; everything added later is part of the
+    /// paid Pro unlock. The engine ignores this — it only gates the picker UI.
+    static let freeStyleIDs: Set<String> = ["gameboy", "pico8", "modern"]
+    var isPremium: Bool { !PixelArtStyle.freeStyleIDs.contains(id) }
+
     /// User override for `resolution`, set by the pixel-size slider. When nil the
     /// style's authored `resolution` is used.
     var resolutionOverride: Int? = nil
