@@ -29,9 +29,22 @@
 		BF4BE9C830027D6700B6A7B0 /* xelkaUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = xelkaUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		BF4BE9E130027D6700B6A7B0 /* Exceptions for "xelka" folder in "xelka" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			additionalCompilerFlagsByRelativePath = {
+				Shaders/Dither.metal = "-fcikernel";
+			};
+			target = BF4BE9AE30027D6400B6A7B0 /* xelka */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		BF4BE9B130027D6400B6A7B0 /* xelka */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				BF4BE9E130027D6700B6A7B0 /* Exceptions for "xelka" folder in "xelka" target */,
+			);
 			path = xelka;
 			sourceTree = "<group>";
 		};
@@ -398,6 +411,9 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSCameraUsageDescription = "xelka uses the camera as a live pixel-art viewfinder.";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "xelka saves your pixel-art photos to your library.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "xelka imports photos to turn them into pixel art.";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -413,6 +429,8 @@
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 26.2;
 				MARKETING_VERSION = 1.0;
+				MTLLINKER_FLAGS = "-cikernel";
+				OTHER_METAL_FLAGS = "-fcikernel";
 				PRODUCT_BUNDLE_IDENTIFIER = com.jimmythegenius.xelka;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
@@ -442,6 +460,9 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSCameraUsageDescription = "xelka uses the camera as a live pixel-art viewfinder.";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "xelka saves your pixel-art photos to your library.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "xelka imports photos to turn them into pixel art.";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -457,6 +478,8 @@
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 26.2;
 				MARKETING_VERSION = 1.0;
+				MTLLINKER_FLAGS = "-cikernel";
+				OTHER_METAL_FLAGS = "-fcikernel";
 				PRODUCT_BUNDLE_IDENTIFIER = com.jimmythegenius.xelka;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;

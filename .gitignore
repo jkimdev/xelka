@@ -1,0 +1,19 @@
+# Xcode build products & derived data
+build/
+DerivedData/
+*.xcuserstate
+
+# Xcode per-user data (keep xcshareddata, drop xcuserdata)
+xcuserdata/
+
+# macOS
+.DS_Store
+
+# Swift Package Manager
+.build/
+.swiftpm/
+Packages/
+
+# Dependencies (unused, kept for safety)
+Pods/
+Carthage/Build/
