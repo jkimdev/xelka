@@ -1,0 +1,57 @@
+//
+//  ResultModelTests.swift
+//  xelkaTests
+//
+//  Covers the tone-adjustment override state machine that backs the result
+//  screen's contrast/saturation/brightness sliders: overrides seed from the
+//  style, track when they diverge, reset, and reseed when the style changes.
+//
+
+import Testing
+import CoreGraphics
+@testable import xelka
+
+@MainActor
+struct ResultModelTests {
+
+    private func model(_ style: PixelArtStyle) -> ResultModel {
+        ResultModel(source: EngineTests.solid((120, 120, 120), w: 64, h: 64), style: style)
+    }
+
+    @Test func adjustmentsSeedFromStyleDefaults() {
+        let m = model(.gameBoy)
+        #expect(m.preprocess.contrast == PixelArtStyle.gameBoy.preprocess.contrast)
+        #expect(m.preprocess.saturation == PixelArtStyle.gameBoy.preprocess.saturation)
+        #expect(m.hasCustomAdjustments == false)
+    }
+
+    @Test func movingASliderMarksCustomThenResetRestores() {
+        let m = model(.gameBoy)
+        m.setContrast(1.5)
+        #expect(m.preprocess.contrast == 1.5)
+        #expect(m.hasCustomAdjustments == true)
+
+        m.resetAdjustments()
+        #expect(m.hasCustomAdjustments == false)
+        #expect(m.preprocess.contrast == PixelArtStyle.gameBoy.preprocess.contrast)
+    }
+
+    @Test func selectingAStyleReseedsAdjustments() {
+        let m = model(.gameBoy)
+        m.setSaturation(1.9)
+        #expect(m.hasCustomAdjustments == true)
+
+        m.select(.pico8)
+        #expect(m.preprocess.saturation == PixelArtStyle.pico8.preprocess.saturation)
+        #expect(m.hasCustomAdjustments == false)
+    }
+
+    @Test func brightnessOverrideIsIndependent() {
+        let m = model(.modernClean)
+        m.setBrightness(0.25)
+        #expect(m.preprocess.brightness == 0.25)
+        // Only brightness moved; contrast/saturation stay at style defaults.
+        #expect(m.preprocess.contrast == PixelArtStyle.modernClean.preprocess.contrast)
+        #expect(m.hasCustomAdjustments == true)
+    }
+}

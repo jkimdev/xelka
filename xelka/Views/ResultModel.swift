@@ -17,6 +17,9 @@ final class ResultModel {
     private(set) var style: PixelArtStyle
     private(set) var dithering: Dithering
     private(set) var resolution: Int
+    /// Live tone overrides (contrast / saturation / brightness). Seeded from the
+    /// style's authored values and reset to them whenever the style changes.
+    private(set) var preprocess: Preprocess
     private(set) var output: CGImage?
     private(set) var isProcessing = false
 
@@ -27,6 +30,7 @@ final class ResultModel {
         self.style = style
         self.dithering = style.dithering
         self.resolution = style.resolution
+        self.preprocess = style.preprocess
         reprocess()
     }
 
@@ -35,6 +39,7 @@ final class ResultModel {
         style = newStyle
         dithering = newStyle.dithering
         resolution = newStyle.resolution
+        preprocess = newStyle.preprocess
         reprocess()
     }
 
@@ -51,11 +56,44 @@ final class ResultModel {
         reprocess()
     }
 
-    /// Current style with the live dithering + resolution overrides folded in.
+    func setContrast(_ v: Float) {
+        guard v != preprocess.contrast else { return }
+        preprocess.contrast = v
+        reprocess()
+    }
+
+    func setSaturation(_ v: Float) {
+        guard v != preprocess.saturation else { return }
+        preprocess.saturation = v
+        reprocess()
+    }
+
+    func setBrightness(_ v: Float) {
+        guard v != preprocess.brightness else { return }
+        preprocess.brightness = v
+        reprocess()
+    }
+
+    /// Restore the current style's authored tone settings.
+    func resetAdjustments() {
+        guard hasCustomAdjustments else { return }
+        preprocess = style.preprocess
+        reprocess()
+    }
+
+    /// True when the tone sliders have been moved off the style's defaults.
+    var hasCustomAdjustments: Bool {
+        preprocess.contrast != style.preprocess.contrast
+            || preprocess.saturation != style.preprocess.saturation
+            || preprocess.brightness != style.preprocess.brightness
+    }
+
+    /// Current style with the live dithering + resolution + tone overrides folded in.
     private var effectiveStyle: PixelArtStyle {
         var s = style
         s.dithering = dithering
         s.resolutionOverride = resolution
+        s.preprocess = preprocess
         return s
     }
 

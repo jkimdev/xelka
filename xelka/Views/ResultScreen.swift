@@ -21,6 +21,7 @@ struct ResultScreen: View {
     @State private var model: ResultModel
     @State private var didSave = false
     @State private var showPaywall = false
+    @State private var showAdjust = false
 
     #if canImport(UIKit)
     @State private var shareImage: ShareImage?
@@ -126,6 +127,8 @@ struct ResultScreen: View {
 
             pixelSizeSlider
 
+            adjustments
+
             if !store.isPro {
                 Button { showPaywall = true } label: {
                     Label("Remove watermark with Pro", systemImage: "crown.fill")
@@ -158,6 +161,67 @@ struct ResultScreen: View {
     private var resolutionBinding: Binding<Double> {
         Binding(get: { Double(model.resolution) },
                 set: { didSave = false; model.setResolution(Int($0)) })
+    }
+
+    // MARK: Tone adjustments (contrast / saturation / brightness)
+
+    /// Collapsible tone controls. Hidden by default so the picker stays clean;
+    /// a dot marks the header when the sliders are off the style's defaults.
+    private var adjustments: some View {
+        VStack(spacing: 12) {
+            Button {
+                withAnimation(.easeInOut(duration: 0.2)) { showAdjust.toggle() }
+            } label: {
+                HStack(spacing: 8) {
+                    Label("Adjust", systemImage: "slider.horizontal.3")
+                    if model.hasCustomAdjustments {
+                        Circle().fill(.yellow).frame(width: 6, height: 6)
+                    }
+                    Spacer()
+                    Image(systemName: showAdjust ? "chevron.up" : "chevron.down")
+                }
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(.secondary)
+                .padding(.horizontal, 16)
+            }
+            .buttonStyle(.plain)
+
+            if showAdjust {
+                adjustSlider(icon: "circle.righthalf.filled", value: contrastBinding, in: 0.5...2.0)
+                adjustSlider(icon: "drop.halffull", value: saturationBinding, in: 0...2.0)
+                adjustSlider(icon: "sun.max", value: brightnessBinding, in: -0.5...0.5)
+
+                Button("Reset") { didSave = false; model.resetAdjustments() }
+                    .font(.caption.weight(.semibold))
+                    .tint(.white)
+                    .disabled(!model.hasCustomAdjustments)
+            }
+        }
+    }
+
+    private func adjustSlider(icon: String, value: Binding<Double>, in range: ClosedRange<Double>) -> some View {
+        HStack(spacing: 12) {
+            Image(systemName: icon).frame(width: 20)
+            Slider(value: value, in: range).tint(.white)
+        }
+        .font(.caption)
+        .foregroundStyle(.secondary)
+        .padding(.horizontal, 16)
+    }
+
+    private var contrastBinding: Binding<Double> {
+        Binding(get: { Double(model.preprocess.contrast) },
+                set: { didSave = false; model.setContrast(Float($0)) })
+    }
+
+    private var saturationBinding: Binding<Double> {
+        Binding(get: { Double(model.preprocess.saturation) },
+                set: { didSave = false; model.setSaturation(Float($0)) })
+    }
+
+    private var brightnessBinding: Binding<Double> {
+        Binding(get: { Double(model.preprocess.brightness) },
+                set: { didSave = false; model.setBrightness(Float($0)) })
     }
 
     // MARK: Save / Share
