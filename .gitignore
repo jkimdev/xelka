@@ -17,3 +17,9 @@ Packages/
 # Dependencies (unused, kept for safety)
 Pods/
 Carthage/Build/
+
+# App Store marketing screenshots (large; regenerate from the mockup)
+appstore-screenshots/
+xelka-appstore-screenshots.zip
+appstore-screenshots-ipad13/
+xelka-appstore-screenshots-ipad13.zip

@@ -11,82 +11,68 @@ yourself — see the shot list at the bottom.
 ## PASTE-READY REVIEWER NOTES (copy everything between the lines)
 
 ```
-Thank you for the review. Please find the requested information below.
+Thank you for the review. Requested information below.
 
-APP PURPOSE & TARGET AUDIENCE
+APP PURPOSE & AUDIENCE
 xelka is an on-device pixel-art camera and photo converter. It turns any photo —
-or the live camera feed — into pixel art using a real color-quantization and
-dithering engine (Ordered and Floyd–Steinberg), not a simple overlay filter.
-Users can point the camera for a live pixel-art viewfinder (front or back),
-import an existing photo, fine-tune contrast/saturation/brightness/pixel size,
-record short pixel-art video, export animated GIFs, save to Photos, and share to
-any app. Target audience: retro / pixel-art enthusiasts, mobile photographers,
-and casual creators who want a distinctive stylized look. It solves the problem
-that most "pixel" filters are low-quality overlays; xelka produces authentic,
-palette-accurate results entirely on the device.
+or the live camera feed — into pixel art using a real color-quantization +
+dithering engine (Ordered / Floyd–Steinberg), not a simple overlay filter. Users
+get a live pixel-art viewfinder (front/back), can import a photo, fine-tune
+contrast/saturation/brightness/pixel size, record short pixel-art video, export
+animated GIFs, save to Photos, and share. Audience: retro / pixel-art fans,
+mobile photographers, and casual creators who want a distinctive stylized look.
 
-HOW TO SET UP AND ACCESS THE MAIN FEATURES
-No account, login, or credentials are required — all features are reachable
-immediately on first launch. No sample files are needed; the camera or the
-user's own Photos provide the input.
-1. Launch the app. It opens directly on the live pixel-art camera. iOS will
-   prompt for Camera access (needed for the live viewfinder).
-2. Pick a style from the style row at the bottom (e.g. Handheld '89, Fantasy 16,
-   Modern Clean). Adjust pixel size / contrast / saturation / brightness.
-3. Tap the shutter to capture, or tap the import button to convert a photo from
-   the library (iOS prompts for Photo Library access on first import).
-4. On the result screen: Save (iOS prompts for permission to add to Photos) or
-   Share to any app.
-5. Video/GIF: switch to Video mode, record, and export a GIF from the result.
+HOW TO ACCESS THE MAIN FEATURES
+No account, login, or credentials required — everything works on first launch.
+No sample files needed (the camera or the user's own Photos are the input).
+1. Launch → opens on the live pixel-art camera (iOS prompts for Camera access).
+2. Pick a style from the bottom row; adjust pixel size / contrast / saturation /
+   brightness.
+3. Tap the shutter to capture, or tap import to convert a library photo (iOS
+   prompts for Photo Library access).
+4. Result screen: Save (iOS prompts to add to Photos) or Share to any app.
+5. Video/GIF: switch to Video mode, record, and export a GIF.
 
-IN-APP PURCHASE / PAID FEATURES
-There is exactly ONE in-app purchase: "xelka Pro" — a one-time NON-CONSUMABLE
-unlock (Product ID: com.jimmythegenius.xelka.pro), USD 4.99 tier. There are NO
-subscriptions and NO auto-renewing products.
-- Free tier: four styles (Handheld '89, Pocket '96, Fantasy 16, Modern Clean),
-  photo + camera conversion, save and share. Free exports carry a small "xelka"
-  watermark.
-- xelka Pro (one-time purchase): removes the watermark, unlocks all remaining
-  styles, and unlocks video + animated GIF export.
-- The paywall is reached by tapping any locked (Pro) style or the Video mode.
-  It shows the localized price and includes a "Restore Purchases" button.
-To test the purchase flow, use a sandbox Apple ID on the paywall reached via any
-locked style or Video mode. The purchase is a standard StoreKit 2 flow.
+IN-APP PURCHASE
+Exactly ONE IAP: "xelka Pro" — a one-time NON-CONSUMABLE unlock (Product ID
+com.jimmythegenius.xelka.pro), USD 4.99. NO subscriptions, NO auto-renewing
+products.
+- Free: four styles, photo + camera conversion, save/share; free exports carry a
+  small "xelka" watermark.
+- Pro (one-time): removes the watermark, unlocks all remaining styles, and
+  unlocks video + animated GIF export.
+- The paywall appears when tapping any locked (Pro) style or Video mode; it shows
+  the localized price and a "Restore Purchases" button.
+To test: use a sandbox Apple ID on that paywall. Standard StoreKit 2 flow.
 
-PERMISSIONS / SENSITIVE DATA PROMPTS
-The app requests only:
-- Camera — used solely as the live pixel-art viewfinder (NSCameraUsageDescription).
-- Photo Library (read) — to import a photo to convert (NSPhotoLibraryUsageDescription).
-- Photo Library (add) — to save the pixel-art result (NSPhotoLibraryAddUsageDescription).
-No microphone (video is recorded silently), no location, no contacts, and NO App
-Tracking Transparency prompt — the app does not track users.
+PERMISSIONS
+Only: Camera (live viewfinder), Photo Library read (import a photo), Photo
+Library add (save the result). No microphone (video is recorded silently), no
+location, no contacts, and NO App Tracking Transparency — the app does not track
+users.
 
-EXTERNAL SERVICES, TOOLS, OR PLATFORMS
-None. The app is 100% on-device. There is no backend, no network calls, no
-third-party SDKs, no analytics, no ads, no authentication service, and no AI
-service. All image/video processing runs locally on the device (Metal / Core
-Image). The only Apple platform service used is StoreKit / the App Store for the
-single in-app purchase above. The bundled Privacy Manifest declares no data
+EXTERNAL SERVICES
+None. 100% on-device: no backend, no network calls, no third-party SDKs, no
+analytics, no ads, no authentication service, no AI service. All image/video
+processing runs locally (Metal / Core Image). The only Apple service used is
+StoreKit for the single IAP above. The bundled Privacy Manifest declares no data
 collection and no tracking.
 
 REGIONAL DIFFERENCES
-None. The app functions identically in all regions. The only difference is UI
-and App Store text localization (Korean, Japanese, English); all features,
-styles, and the single in-app purchase are the same everywhere.
+None — the app functions identically in all regions. Only UI / App Store text is
+localized (Korean, Japanese, English); all features, styles, and the IAP are the
+same everywhere.
 
 REGULATED INDUSTRY / THIRD-PARTY MATERIAL
-The app is not part of a regulated industry and includes no protected
-third-party material. Color palettes are our own approximations of classic
-retro-hardware looks, generated by the app's engine; style names are used
-descriptively to indicate the visual look.
+Not a regulated industry; no protected third-party material. Color palettes are
+our own approximations of classic retro-hardware looks, generated by the app's
+engine; style names are descriptive.
 
-DEVICES / OS TESTED BEFORE SUBMISSION
-Tested on a physical iPhone 16 Pro Max (iOS <<CONFIRM VERSION, e.g. 18.5>>).
-Verified end-to-end on device: launching the app, the live pixel-art camera,
-recording a ~90-second pixel-art video, saving it to Photos, exporting an
-animated GIF, and sharing.
-
-Minimum deployment target: iOS 18.0. Supported: iPhone and iPad.
+DEVICES / OS TESTED
+Tested on a physical iPhone 16 Pro Max (iOS <<CONFIRM VERSION>>). Verified
+end-to-end on device: launch, live pixel-art camera, recording a ~90s pixel-art
+video, saving to Photos, GIF export, and sharing. Minimum target iOS 18.0;
+supports iPhone and iPad.
 ```
 
 ---
