@@ -91,7 +91,7 @@ extension PixelArtStyle {
     /// dither on — the authentic DMG handheld look.
     static let gameBoy = PixelArtStyle(
         id: "gameboy",
-        name: "Game Boy",
+        name: "Handheld '89",
         subtitle: "4-color olive duotone",
         resolution: 128,
         quantization: .fixed(.gameBoy),
@@ -103,8 +103,8 @@ extension PixelArtStyle {
     /// snap cleanly onto PICO-8's punchy swatches; ordered dither for game feel.
     static let pico8 = PixelArtStyle(
         id: "pico8",
-        name: "PICO-8",
-        subtitle: "16-color fantasy console",
+        name: "Fantasy 16",
+        subtitle: "vibrant 16-color",
         resolution: 128,
         quantization: .fixed(.pico8),
         dithering: .ordered,
@@ -126,7 +126,7 @@ extension PixelArtStyle {
     /// Neutral grayscale at handheld scale — the Game Boy Pocket look.
     static let gameBoyPocket = PixelArtStyle(
         id: "gbpocket",
-        name: "Game Boy Pocket",
+        name: "Pocket '96",
         subtitle: "4-shade grayscale",
         resolution: 128,
         quantization: .fixed(.grayscale),
@@ -192,7 +192,7 @@ extension PixelArtStyle {
     /// Commodore 64 16-color home-computer palette.
     static let commodore64 = PixelArtStyle(
         id: "c64",
-        name: "Commodore 64",
+        name: "Home '82",
         subtitle: "16-color home computer",
         resolution: 128,
         quantization: .fixed(.commodore64),
