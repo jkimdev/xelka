@@ -19,17 +19,22 @@ import Foundation
 
 // Shared mutable state (adaptiveCube, isRebuilding) is guarded by `cubeLock`;
 // everything else is either immutable or touched only on the capture queue.
+//
+// We cache LUT *data*, never CIFilter instances: a cached filter keeps its last
+// `inputImage`, which retains the camera's CVPixelBuffer. One pinned buffer per
+// visited palette drains AVCaptureVideoDataOutput's small pool after a few style
+// switches, and the camera stops delivering frames (the preview freezes).
 nonisolated final class PixelLiveFilter: @unchecked Sendable {
     private let context: CIContext
     private let workingSpace = CGColorSpace(name: CGColorSpace.sRGB)!
 
-    /// One cube per fixed palette, keyed by palette name (capture queue only).
-    private var fixedCubes: [String: any CIColorCubeWithColorSpace] = [:]
+    /// One LUT per fixed palette, keyed by palette name (capture queue only).
+    private var fixedCubes: [String: CubeLUT] = [:]
     private var adaptiveFrame = 0
 
     /// Current adaptive cube + rebuild state, shared with `rebuildQueue`.
     private let cubeLock = NSLock()
-    private var adaptiveCube: (any CIColorCubeWithColorSpace)?
+    private var adaptiveCube: CubeLUT?
     private var isRebuilding = false
 
     /// Adaptive palette refreshes run off the capture queue so frame delivery
@@ -40,6 +45,12 @@ nonisolated final class PixelLiveFilter: @unchecked Sendable {
     private let adaptiveRebuildEvery = 20
     private let cubeDimension = 48         // fixed palettes: built once, cached
     private let adaptiveCubeDimension = 32 // rebuilt live, so keep it cheaper
+
+    /// A baked color cube: plain data, safe to cache and share across queues.
+    private struct CubeLUT {
+        let dimension: Int
+        let data: Data
+    }
 
     init(context: CIContext) {
         self.context = context
@@ -76,8 +87,13 @@ nonisolated final class PixelLiveFilter: @unchecked Sendable {
             }
         }
 
-        // 3. Snap colors to the palette via LUT.
-        guard let cube = cube(for: style, source: blocks) else { return blocks }
+        // 3. Snap colors to the palette via LUT. A fresh filter per frame is
+        //    cheap and holds no reference to the frame once we return.
+        guard let lut = cube(for: style, source: blocks) else { return blocks }
+        let cube = CIFilter.colorCubeWithColorSpace()
+        cube.cubeDimension = Float(lut.dimension)
+        cube.cubeData = lut.data
+        cube.colorSpace = workingSpace
         cube.inputImage = blocks
         return (cube.outputImage ?? blocks).cropped(to: ext)
     }
@@ -134,8 +150,7 @@ nonisolated final class PixelLiveFilter: @unchecked Sendable {
 
     // MARK: - Cube selection
 
-    private func cube(for style: PixelArtStyle, source: CIImage)
-        -> (any CIColorCubeWithColorSpace)? {
+    private func cube(for style: PixelArtStyle, source: CIImage) -> CubeLUT? {
         switch style.quantization {
         case .fixed(let palette):
             if let cached = fixedCubes[palette.name] { return cached }
@@ -187,8 +202,7 @@ nonisolated final class PixelLiveFilter: @unchecked Sendable {
     // MARK: - Cube construction
 
     /// Bake a dim³ RGBA LUT where every cell holds its nearest palette color.
-    private func buildCube(from palette: Palette, dim: Int)
-        -> any CIColorCubeWithColorSpace {
+    private func buildCube(from palette: Palette, dim: Int) -> CubeLUT {
         var data = [Float](repeating: 0, count: dim * dim * dim * 4)
         var o = 0
         // CIColorCube layout: R varies fastest, then G, then B.
@@ -204,11 +218,7 @@ nonisolated final class PixelLiveFilter: @unchecked Sendable {
                 }
             }
         }
-        let cube = CIFilter.colorCubeWithColorSpace()
-        cube.cubeDimension = Float(dim)
-        cube.cubeData = data.withUnsafeBytes { Data($0) }
-        cube.colorSpace = workingSpace
-        return cube
+        return CubeLUT(dimension: dim, data: data.withUnsafeBytes { Data($0) })
     }
 
     /// Render a tiny (~44px) version of the current frame and read its pixels.
